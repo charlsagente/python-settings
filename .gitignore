@@ -2,3 +2,6 @@
 \.idea/
 
 *.pyc
+
+dist/
+build/
