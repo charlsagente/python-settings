@@ -1,5 +1,10 @@
+"""
+Based on Django Settings https://github.com/django/django/blob/stable/1.11.x/django/conf/__init__.py
+
+"""
 import os
 import importlib
+import logging
 from .exceptions import ImproperlyConfigured
 
 ENVIRONMENT_VARIABLE = "SETTINGS_MODULE"
@@ -10,8 +15,8 @@ class BaseSettings(object):
     """
     Common logic for settings whether set by a module or by the user
     """
-    def __setattr__(self, name, value):
 
+    def __setattr__(self, name, value):
         object.__setattr__(self, name, value)
 
 
@@ -22,8 +27,15 @@ class Settings(BaseSettings):
         :param settings_module: User provided settings module (settings.py)
         """
         #  update this dict from global settings but only for CAPITALS settings
-        self.SETTINGS_MODULE = settings_module
-        mod = importlib.import_module(self.SETTINGS_MODULE)
+        try:
+            self.SETTINGS_MODULE = settings_module
+            mod = importlib.import_module(self.SETTINGS_MODULE)
+        except ImportError:
+            logging.error("We can't import your SETTINGS_MODULE, it must be a python module, "
+                          "check the format \{module\}.\{settings\} (no .py extension)")
+            raise ImproperlyConfigured("Cannot import SETTINGS_MODULE")
+        except Exception as e:
+            logging.error("Error trying to import your settings module")
 
         self._explicit_settings = set()
         for setting in dir(mod):
@@ -38,7 +50,7 @@ class Settings(BaseSettings):
     def __repr__(self):
         return '<%(cls)s "%(settings_module)s">' % {
             'cls': self.__class__.__name__,
-            'settings_module':self.SETTINGS_MODULE
+            'settings_module': self.SETTINGS_MODULE
         }
 
 
@@ -54,7 +66,7 @@ class SetupSettings(object):
         """
         settings_module = os.environ.get(ENVIRONMENT_VARIABLE)
         if not settings_module:
-            desc = ("setting %s"% name) if name else "settings"
+            desc = ("setting %s" % name) if name else "settings"
             raise ImproperlyConfigured(
                 "Requested %s, but settings are not configured. "
                 "You must either define the environment variable %s "
