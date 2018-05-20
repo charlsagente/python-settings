@@ -3,9 +3,18 @@ Simple module to have easy access to settings variables in all your python modul
  [django.conf.settings](https://github.com/django/django/blob/stable/1.11.x/django/conf/__init__.py#L58').
  
  ## Installation
+ From test.pypi
  ```bash
  python -m pip install --index-url https://test.pypi.org/project/ python_settings==0.1.2
 ```
+
+Or
+
+Clone this repo and type
+```bash
+python setup.py install
+```
+
  ## Usage
  You must have an environment variable called **SETTINGS_MODULE** pointing to your settings module in the format {module}.
  {settings}. With no .py extension. 
