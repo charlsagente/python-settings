@@ -21,7 +21,7 @@ python setup.py install
  
  Example:
  ```bash
-export SETTINGS_MODULE = 'myproject.settings.settings'
+export SETTINGS_MODULE='myproject.settings'
 ```
 
 And the settings.py must contain variables in capital letter format:
@@ -68,9 +68,6 @@ from .settings import *
 DATABASE_HOST = '10.0.0.1'
 
 TOKEN_API = os.environ.get("TOKEN_API")
-
-
-
 ```
 
 And update your **SETTINGS_MODULE** variable 
