@@ -11,6 +11,36 @@ ENVIRONMENT_VARIABLE = "SETTINGS_MODULE"
 empty = object()
 
 
+class LazyProxy(object):
+    def __init__(self, cls, *params, **kwargs):
+        self.__dict__["_cls"] = cls
+        self.__dict__["_params"] = params
+        self.__dict__["_kwargs"] = kwargs
+
+        self.__dict__["_obj"] = None
+
+    def __init_obj(self):
+        self.__dict__["_obj"] = self.__dict__["_cls"](*self.__dict__["_params"], **self.__dict__["_kwargs"])
+
+    def __call__(self):
+        """
+        Initializes expensive object and returns it
+        :return: Your custom object with parameters from LazySetting initializer
+        """
+        return self.__dict__["_cls"](*self.__dict__["_params"], **self.__dict__["_kwargs"])
+
+
+class LazyInit(object):
+    def __new__(cls, new_object, *args, **kwargs):
+        return LazyProxy(new_object, *args, **kwargs)
+
+
+class LazySetting(LazyInit):
+
+    def __init__(self, obj, *args, **kwargs):
+        print("Init")
+
+
 class BaseSettings(object):
     """
     Common logic for settings whether set by a module or by the user
@@ -29,7 +59,8 @@ class Settings(BaseSettings):
         #  update this dict from global settings but only for CAPITALS settings
         try:
             self.SETTINGS_MODULE = settings_module
-            mod = importlib.import_module(self.SETTINGS_MODULE)
+            mod = importlib.import_module(
+                self.SETTINGS_MODULE)
         except ImportError:
             logging.error("We can't import your SETTINGS_MODULE, it must be a python module, "
                           "check the format \{module\}.\{settings\} (no .py extension)")
@@ -75,10 +106,21 @@ class SetupSettings(object):
             )
         self._wrapped = Settings(settings_module)
 
-    def __getattr__(self, item):
+    def __getattr__(self, item):  # TODO: Implement lazy pattern and quit this functionallity
         if self._wrapped is empty:
             self._setup(item)
-        return getattr(self._wrapped, item)
+        get_attr = getattr(self._wrapped, item)
+        if isinstance(get_attr, LazyProxy):
+            try:
+                get_attr = get_attr()
+            except Exception as ex:
+                raise ImproperlyConfigured(
+                    "You didn't set your object properly"
+                    "You must use the LazySetting and pass your object without initializing it"
+                    "LazySetting(MyCustomClass, [params])"
+                    "Exception: %s - %s" % (type(ex), ex.__repr__())
+                )
+        return get_attr
 
     def configure(self, default_settings, **options):
         """

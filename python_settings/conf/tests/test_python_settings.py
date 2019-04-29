@@ -42,3 +42,15 @@ class TestPythonSettings(unittest.TestCase):
         self.assertIsNotNone(settings.URL_CONFIG)
         self.assertEqual(settings.URL_CONFIG, URL_CONFIG)
         self.assertTrue(settings.configured)
+
+    def test_lazy_config(self):
+
+        from python_settings.conf import settings
+
+        try:
+            os.environ["SETTINGS_MODULE"] = "python_settings.conf.tests.settings.lazy_settings"
+        except Exception:
+            raise BaseException('Error: Trying to set the environment')
+        self.assertTrue(type(settings.LAZY_TASK))
+
+        self.assertTrue(settings.configured)
