@@ -2,10 +2,10 @@
 Based on Django Settings https://github.com/django/django/blob/stable/1.11.x/django/conf/__init__.py
 
 """
-import os
 import importlib
-import logging
-from .exceptions import ImproperlyConfigured
+import os
+
+from python_settings.conf.exceptions import ImproperlyConfigured, LazyInitializationImproperlyConfigured
 
 ENVIRONMENT_VARIABLE = "SETTINGS_MODULE"
 empty = object()
@@ -19,15 +19,15 @@ class LazyProxy(object):
 
         self.__dict__["_obj"] = None
 
-    def __init_obj(self):
-        self.__dict__["_obj"] = self.__dict__["_cls"](*self.__dict__["_params"], **self.__dict__["_kwargs"])
-
     def __call__(self):
         """
         Initializes expensive object and returns it
-        :return: Your custom object with parameters from LazySetting initializer
+        :return: Your custom object with parameters from LazySetting already initialized
         """
-        return self.__dict__["_cls"](*self.__dict__["_params"], **self.__dict__["_kwargs"])
+        if self.__dict__["_obj"] is None:
+            self.__dict__["_obj"] = self.__dict__["_cls"](*self.__dict__["_params"], **self.__dict__["_kwargs"])
+
+        return self.__dict__["_obj"]
 
 
 class LazyInit(object):
@@ -36,9 +36,7 @@ class LazyInit(object):
 
 
 class LazySetting(LazyInit):
-
-    def __init__(self, obj, *args, **kwargs):
-        print("Init")
+    pass
 
 
 class BaseSettings(object):
@@ -62,27 +60,13 @@ class Settings(BaseSettings):
             mod = importlib.import_module(
                 self.SETTINGS_MODULE)
         except ImportError:
-            logging.error("We can't import your SETTINGS_MODULE, it must be a python module, "
-                          "check the format \{module\}.\{settings\} (no .py extension)")
             raise ImproperlyConfigured("Cannot import SETTINGS_MODULE")
-        except Exception as e:
-            logging.error("Error trying to import your settings module")
-
-        self._explicit_settings = set()
+        except Exception:
+            raise ImproperlyConfigured("Error trying to import your settings module")
         for setting in dir(mod):
             if setting.isupper():
                 setting_value = getattr(mod, setting)
                 setattr(self, setting, setting_value)
-                self._explicit_settings.add(setting)
-
-    def is_overridden(self, setting):
-        return setting in self._explicit_settings
-
-    def __repr__(self):
-        return '<%(cls)s "%(settings_module)s">' % {
-            'cls': self.__class__.__name__,
-            'settings_module': self.SETTINGS_MODULE
-        }
 
 
 class SetupSettings(object):
@@ -106,15 +90,15 @@ class SetupSettings(object):
             )
         self._wrapped = Settings(settings_module)
 
-    def __getattr__(self, item):  # TODO: Implement lazy pattern and quit this functionallity
+    def __getattr__(self, item):
         if self._wrapped is empty:
             self._setup(item)
-        get_attr = getattr(self._wrapped, item)
+        get_attr = getattr(self._wrapped, item, object())
         if isinstance(get_attr, LazyProxy):
             try:
                 get_attr = get_attr()
             except Exception as ex:
-                raise ImproperlyConfigured(
+                raise LazyInitializationImproperlyConfigured(
                     "You didn't set your object properly"
                     "You must use the LazySetting and pass your object without initializing it"
                     "LazySetting(MyCustomClass, [params])"
@@ -134,9 +118,7 @@ class SetupSettings(object):
         if self._wrapped is not empty:
             raise RuntimeError('Settings already configured.')
         else:
-            for setting in dir(default_settings):
-                if setting.isupper():
-                    setattr(self, setting, getattr(default_settings, setting))
+            self._wrapped = UserSettingsHolder(default_settings)
 
     @property
     def configured(self):
@@ -145,6 +127,23 @@ class SetupSettings(object):
         :return: True/False
         """
         return self._wrapped is not empty
+
+
+class UserSettingsHolder:
+    """Holder for user configured settings."""
+
+    def __init__(self, default_settings):
+        """
+        Requests for configuration variables not in this class are satisfied
+        from the module specified in default_settings (if possible).
+        """
+        self.default_settings = default_settings
+
+    def __getattr__(self, name):
+        return getattr(self.default_settings, name)
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
 
 
 settings = SetupSettings()

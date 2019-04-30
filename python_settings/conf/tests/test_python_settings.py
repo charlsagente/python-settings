@@ -51,6 +51,31 @@ class TestPythonSettings(unittest.TestCase):
             os.environ["SETTINGS_MODULE"] = "python_settings.conf.tests.settings.lazy_settings"
         except Exception:
             raise BaseException('Error: Trying to set the environment')
+
         self.assertTrue(type(settings.LAZY_TASK))
+        self.assertTrue(type(settings.LAZY_TASK))  # For debugging purposes to check if initializer wasn't called again
 
         self.assertTrue(settings.configured)
+
+    def test_lazy_initialization(self):
+        from python_settings.conf import settings
+        from python_settings.conf.tests.settings import lazy_settings
+        try:
+            os.environ["SETTINGS_MODULE"] = "python_settings.conf.tests.settings.lazy_settings"
+        except Exception:
+            raise BaseException('Error: Trying to set the environment')
+
+        settings.configure(default_settings=lazy_settings)
+        self.assertTrue(settings.configured)
+        self.assertTrue(settings.LAZY_TASK)
+        self.assertTrue(settings.LAZY_TASK_HEAVY_INITIALIZATION)
+
+    def test_wrong_settings_module(self):
+        from python_settings.conf import settings
+        from python_settings.conf.exceptions import ImproperlyConfigured
+        try:
+            os.environ["SETTINGS_MODULE"] = "python_settings.conf.tests.wrong_settings_module"
+        except Exception:
+            raise BaseException('Error: Trying to set the environment')
+        with self.assertRaises(ImproperlyConfigured) as c:
+            print(settings.CONFIG)
