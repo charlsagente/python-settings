@@ -1,11 +1,11 @@
 # python-settings
-Simple module to have easy access to settings variables in all your python modules. It is based on 
+This module provides you easy access to your **config/settings** properties from all your python modules, it supports normal and lazy initialization for each property. It is based on 
  [django.conf.settings](https://github.com/django/django/blob/stable/1.11.x/django/conf/__init__.py#L58').
  
  ## Installation
  From pip
  ```bash
- pip install python-settings-module
+ pip install python-settings
 ```
 
 Or
@@ -16,31 +16,53 @@ python setup.py install
 ```
 
  ## Usage
- You must have an environment variable called **SETTINGS_MODULE** pointing to your settings module in the format {module}.
- {settings}. With no .py extension. 
+ There are two ways to initialize this library
+ *  Manual configuration. Using python modules
  
- Example:
- ```bash
-export SETTINGS_MODULE='myproject.settings'
-```
+    ```python
+    from python_settings.tests.settings.base_settings import URL_CONFIG # Avoid this way after installing python_settings
+    from python_settings.tests.settings import base_settings
+    
+    from python_settings import settings # Import this project
+    settings.configure(base_settings) # configure() receives a python module
+    assert settings.configured
+    assert settings.URL_CONFIG == URL_CONFIG # now you can use settings in all your project
+ 
+    ```  
+ * Using an environment variable. You must have an environment variable called **SETTINGS_MODULE** pointing to your settings module in the format {module}.
+ {settings}. With no .py extension.
+ 
+    Example:
+   ```bash
+    export SETTINGS_MODULE='myproject.settings' 
+   ```
+    or
+    
+   ```python
+   import os
+   os.environ["SETTINGS_MODULE"] = 'myproject.settings' 
+   ```
 
-And the settings.py must contain variables in capital letter format:
+Example of the settings.py, it must contain variables in capital letter format:
 ```python
 # settings.py
+from python_settings import LazySetting
 
-DATABASE_HOST = '127.0.0.1'
+DATABASE_HOST = '10.0.0.1'
 
 DATABASE_NAME = 'DATABASENAME'
-...
-```
 
+LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222") # LazySettings(Class, args, **kwargs)
+```
  
- And from any module in your code, you should call your settings variables like this example:
+And from any module in your code, you should call your settings variables like this example:
  ```python
-from python_settings.conf import settings 
+from python_settings import settings 
 
 print(settings.DATABASE_HOST)
 print(settings.DATABASE_NAME)
+settings.LAZY_INITIALIZATION.instantiated_object_fn() # The initialization of the object will happen only once
+
 ``` 
 
 
@@ -50,7 +72,7 @@ Example for development environment settings:
 # development_settings.py
 import os
 
-from .settings import *
+from .base_settings import *
 
 
 TOKEN_API = os.environ.get("TOKEN_API")
@@ -74,3 +96,5 @@ And update your **SETTINGS_MODULE** variable
  ```bash
 export SETTINGS_MODULE = 'myproject.settings.testing_settings'
 ```
+or using the manual config
+

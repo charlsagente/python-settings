@@ -13,7 +13,7 @@ class HeavyInitializationClass(object):
         print("One second delay after hard task")
 
 
-from python_settings.conf import LazySetting
+from python_settings import LazySetting
 
 LAZY_TASK = LazySetting(Task, "Making it lazy")
 
