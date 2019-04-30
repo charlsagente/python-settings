@@ -52,7 +52,7 @@ DATABASE_HOST = '10.0.0.1'
 
 DATABASE_NAME = 'DATABASENAME'
 
-LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222") # LazySettings(Class, args, **kwargs)
+LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222") # LazySetting(Class, args, **kwargs)
 ```
  
 And from any module in your code, you should call your settings variables like this example:
@@ -65,7 +65,7 @@ settings.LAZY_INITIALIZATION.instantiated_object_fn() # The initialization of th
 
 ``` 
 
-
+## Example for different environments
 You can use as many settings files as you need for different environments.
 Example for development environment settings:
 ```python
