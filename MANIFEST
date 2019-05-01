@@ -2,5 +2,5 @@
 README.md
 setup.cfg
 setup.py
-python_settings/conf/__init__.py
-python_settings/conf/exceptions.py
+python_settings/__init__.py
+python_settings/exceptions.py
