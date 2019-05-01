@@ -15,8 +15,6 @@ setup(
     classifiers=[
             'Intended Audience :: Developers',
             'Operating System :: OS Independent',
-            'Programming Language :: Python',
-            'Utils :: Lazy initializer',
-            'Utils :: Settings Config file'
+            'Programming Language :: Python'
         ]
 )
