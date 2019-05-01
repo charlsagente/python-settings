@@ -17,19 +17,21 @@ python setup.py install
 
  ## Usage
  There are two ways to initialize this library
- *  Manual configuration. Using python modules
+ *  **Manual configuration**. Using python modules
  
     ```python
-    from python_settings.tests.settings.base_settings import URL_CONFIG # Avoid this way after installing python_settings
+    # Avoid this way after installing python_settings
+    from python_settings.tests.settings.base_settings import URL_CONFIG 
     from python_settings.tests.settings import base_settings
     
-    from python_settings import settings # Import this project
+    #Using this module
+    from python_settings import settings
     settings.configure(base_settings) # configure() receives a python module
     assert settings.configured
     assert settings.URL_CONFIG == URL_CONFIG # now you can use settings in all your project
  
     ```  
- * Using an environment variable. You must have an environment variable called **SETTINGS_MODULE** pointing to your settings module in the format {module}.
+ * Using an **environment variable**. You must have an environment variable called **SETTINGS_MODULE** pointing to your settings module in the format {module}.
  {settings}. With no .py extension.
  
     Example:
@@ -52,7 +54,8 @@ DATABASE_HOST = '10.0.0.1'
 
 DATABASE_NAME = 'DATABASENAME'
 
-LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222") # LazySetting(Class, args, **kwargs)
+LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222") 
+# LazySetting(Class, *args, **kwargs)
 ```
  
 And from any module in your code, you should call your settings variables like this example:
@@ -61,8 +64,8 @@ from python_settings import settings
 
 print(settings.DATABASE_HOST)
 print(settings.DATABASE_NAME)
-settings.LAZY_INITIALIZATION.instantiated_object_fn() # The initialization of the object will happen only once
-
+# The initialization of the object will happen only once
+settings.LAZY_INITIALIZATION.instantiated_object_fn() 
 ``` 
 
 ## Example for different environments
@@ -97,4 +100,7 @@ And update your **SETTINGS_MODULE** variable
 export SETTINGS_MODULE = 'myproject.settings.testing_settings'
 ```
 or using the manual config
+
+TODO LIST: 
+*   Add compatibility with Python 2.7 in the LazyInitializer 
 
