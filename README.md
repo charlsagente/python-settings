@@ -17,7 +17,7 @@ python setup.py install
 
  ## How to start
 
-Define a python module like settings.py in your project, the variable names must be Capital Letters (A-Z), example:
+Define a python module like settings.py in your project, the variable names must be in Capital Letters (A-Z), example:
 ```python
 # settings.py
 
@@ -63,7 +63,7 @@ DATABASE_NAME = 'DATABASENAME'
     ```  
  
    
-##Usage
+## Usage
 
 And from any module in your code, you should call your settings variables like this example:
  ```python
@@ -75,8 +75,15 @@ print(settings.DATABASE_NAME) # Will print 'DATABASENAME'
 
 ## Lazy Initialization 
 
-This saves too much time when you are starting your project, if you are dealing with heavy to instantiate objects like
-database connections or similar network calls. 
+Every time you start/restart your python project, 
+all your defined variables are evaluated many times (depending manual imports directly to your module), 
+if you are dealing with heavy to instantiate objects like
+database connections or similar network calls you will expect some delay. 
+Using Lazy Initialization increases the performance of this process, 
+changing the behavior of evaluating the variables only when needed.   
+
+### Use the Lazy Initializer
+
 In your python settings module, you have to import our LazySetting class located in python_settings.
 
 
@@ -88,6 +95,7 @@ LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222")
 # LazySetting(Class, *args, **kwargs)
 
 ```
+
 Only the first time you call this property, the HeavyInitializationClass will be instantiated and the 
 *args and **kwargs parameters will be passed. Every time you call this property the same instance will be returned.  
 
@@ -133,5 +141,6 @@ export SETTINGS_MODULE = 'myproject.settings.testing_settings'
 or using the manual config
 
 TODO LIST: 
+*   Add function to update default environment variable name
 *   Add compatibility with Python 2.7 in the LazyInitializer (maybe)
 
