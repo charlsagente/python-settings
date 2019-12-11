@@ -17,9 +17,9 @@ Clone this repo and type
 python setup.py install
 ```
 
- ## How to start
+ ## How to configure
 
-Define a python module like settings.py in your project, the variable names must be in Capital Letters (A-Z), example:
+Create a python file like **settings.py** in your project, the variable names must be in Capital Letters (A-Z), example:
 ```python
 # settings.py
 
@@ -30,45 +30,39 @@ DATABASE_NAME = 'DATABASENAME'
 
 ```
 
-## Initializing the library
-
- There are two ways to initialize this library
+ Two optional patterns to initialize this library
  
- * **Automatic config** and preferred way, using an **environment variable**. You must have an environment variable called **SETTINGS_MODULE** pointing to your settings module in the format {module}.
+ * Option 1. Using an **environment variable**. 
+ You must have an environment variable called **SETTINGS_MODULE** and as a value your just created python settings file in the format {module}.
  {name}. With no .py extension.
  
     Example in bash:
    ```bash
-    export SETTINGS_MODULE='myproject.base_settings' 
+    export SETTINGS_MODULE='settings' 
    ```
    
     Example in Python
     
    ```python
    import os
-   os.environ["SETTINGS_MODULE"] = 'myproject.base_settings' 
+   os.environ["SETTINGS_MODULE"] = 'settings' 
    ```
    
- *  **Manual configuration**. Passing directly your python module to configure()
+ *  Option 2. Calling the configure function from our settings module and passing it your python file
  
     ```python
-    # Avoid this way after installing python_settings
-    from python_settings.tests.settings.base_settings import URL_CONFIG 
-    from python_settings.tests.settings import base_settings
-    
-    #Initializing manually
     from python_settings import settings
-    settings.configure(base_settings) # configure() receives a python module
-    assert settings.configured
-    assert settings.URL_CONFIG == URL_CONFIG # now you can use settings in all your project
- 
+    from . import settings as my_local_settings
+    
+    settings.configure(my_local_settings) # configure() receives a python module
+    assert settings.configured # now you are set
     ```  
  
    
-## Usage
+## How to use
 
-And from any module in your code, you should call your settings variables like this example:
- ```python
+Import the settings module and access directly to your properties:
+```python
 from python_settings import settings 
 
 print(settings.DATABASE_HOST) # Will print '10.0.0.1'
@@ -78,15 +72,16 @@ print(settings.DATABASE_NAME) # Will print 'DATABASENAME'
 ## Lazy Initialization 
 
 Every time you start/restart your python project, 
-all your defined variables are evaluated many times (depending manual imports directly to your module), 
+all your defined variables are evaluated many times, 
 if you are dealing with heavy to instantiate objects like
 database connections or similar network calls you will expect some delay. 
+
 Using Lazy Initialization increases the performance of this process, 
-changing the behavior of evaluating the variables only when needed.   
+changing the behavior of evaluating the variables only when is needed.   
 
 ### Use the Lazy Initializer
 
-In your python settings module, you have to import our LazySetting class located in python_settings.
+In your python settings file, you have to import our LazySetting class located in python_settings.
 
 
 ```python
@@ -144,5 +139,4 @@ or using the manual config
 
 TODO LIST: 
 *   Add function to update default environment variable name
-*   Add compatibility with Python 2.7 in the LazyInitializer (maybe)
 

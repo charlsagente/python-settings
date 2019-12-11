@@ -69,6 +69,23 @@ class Settings(BaseSettings):
                 setattr(self, setting, setting_value)
 
 
+class UserSettingsHolder:
+    """Holder for user configured settings."""
+
+    def __init__(self, default_settings):
+        """
+        Requests for configuration variables not in this class are satisfied
+        from the module specified in default_settings (if possible).
+        """
+        self.default_settings = default_settings
+
+    def __getattr__(self, name):
+        return getattr(self.default_settings, name)
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+
+
 class SetupSettings(object):
 
     def __init__(self):
@@ -129,21 +146,6 @@ class SetupSettings(object):
         return self._wrapped is not empty
 
 
-class UserSettingsHolder:
-    """Holder for user configured settings."""
-
-    def __init__(self, default_settings):
-        """
-        Requests for configuration variables not in this class are satisfied
-        from the module specified in default_settings (if possible).
-        """
-        self.default_settings = default_settings
-
-    def __getattr__(self, name):
-        return getattr(self.default_settings, name)
-
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-
-
 settings = SetupSettings()
+
+__all__ = ["settings", "LazySetting"]
