@@ -38,7 +38,7 @@ DATABASE_NAME = 'DATABASENAME'
  
     Example in bash:
    ```bash
-    export SETTINGS_MODULE='settings' 
+    export SETTINGS_MODULE=settings
    ```
    
     Example in Python
@@ -135,7 +135,7 @@ And update your **SETTINGS_MODULE** variable
  ```bash
 export SETTINGS_MODULE = 'myproject.settings.testing_settings'
 ```
-or using the manual config
+or use the config function
 
 TODO LIST: 
 *   Add function to update default environment variable name
