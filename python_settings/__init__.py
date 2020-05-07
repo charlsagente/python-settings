@@ -110,7 +110,7 @@ class SetupSettings(object):
     def __getattr__(self, item):
         if self._wrapped is empty:
             self._setup(item)
-        get_attr = getattr(self._wrapped, item, object())
+        get_attr = getattr(self._wrapped, item, empty)
         if isinstance(get_attr, LazyProxy):
             try:
                 get_attr = get_attr()
@@ -121,6 +121,8 @@ class SetupSettings(object):
                     "LazySetting(MyCustomClass, [params])"
                     "Exception: %s - %s" % (type(ex), ex.__repr__())
                 )
+        if get_attr is empty:
+            raise AttributeError
         return get_attr
 
     def configure(self, default_settings, **options):
