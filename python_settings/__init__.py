@@ -82,9 +82,6 @@ class UserSettingsHolder:
     def __getattr__(self, name):
         return getattr(self.default_settings, name)
 
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-
 
 class SetupSettings(object):
 
