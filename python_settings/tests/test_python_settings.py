@@ -37,6 +37,14 @@ class TestPythonSettings(unittest.TestCase):
         self.assertEqual(settings.DEFAULT_VALUE, DEFAULT_VALUE)
         self.assertEqual(settings.DEFAULT_CONSTANT, DEFAULT_CONSTANT)
 
+    def test_attribute_error(self):
+        from python_settings import settings
+        # make sure AttributeError is thrown for missing Attribute
+        with self.assertRaises(AttributeError) as a:
+            print(settings.NOT_A_SETTING)
+        # make sure we get the default value out of getattr
+        self.assertEqual(getattr(settings, 'NOTHING', 'default'), 'default')
+
     def test_config_environment(self):
         from python_settings.tests.settings.base_settings import URL_CONFIG
         from python_settings import settings

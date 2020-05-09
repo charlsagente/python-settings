@@ -82,9 +82,6 @@ class UserSettingsHolder:
     def __getattr__(self, name):
         return getattr(self.default_settings, name)
 
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
-
 
 class SetupSettings(object):
 
@@ -110,7 +107,7 @@ class SetupSettings(object):
     def __getattr__(self, item):
         if self._wrapped is empty:
             self._setup(item)
-        get_attr = getattr(self._wrapped, item, object())
+        get_attr = getattr(self._wrapped, item)
         if isinstance(get_attr, LazyProxy):
             try:
                 get_attr = get_attr()
