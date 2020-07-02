@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='python-settings',
-    version='0.2.1',
+    version='0.2.2',
     packages=setuptools.find_packages(),
     url='https://github.com/charlsagente/python-settings',
     license='MIT',
