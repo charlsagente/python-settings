@@ -50,19 +50,19 @@ class TestPythonSettings(unittest.TestCase):
         from python_settings import settings
 
         self.assertIsNotNone(settings.URL_CONFIG)
-        self.assertEqual(os.environ.get("SETTINGS_MODULE"), DEFAULT_PYTHON_SETTINGS)
+        self.assertEqual(os.environ.get('SETTINGS_MODULE'), DEFAULT_PYTHON_SETTINGS)
         self.assertEqual(settings.URL_CONFIG, URL_CONFIG)
         self.assertTrue(settings.configured)
 
     def test_config_new_environment(self):
         from python_settings.tests.settings.development_settings import URL_CONFIG
         from python_settings import settings
-        development_settings = "python_settings.tests.settings.development_settings"
+        development_settings = 'python_settings.tests.settings.development_settings'
         try:
-            os.environ["SETTINGS_MODULE"] = development_settings
+            os.environ['SETTINGS_MODULE'] = development_settings
         except Exception:
             raise BaseException('Error: Trying to set the environment')
-        self.assertEqual(os.environ.get("SETTINGS_MODULE"), development_settings)
+        self.assertEqual(os.environ.get('SETTINGS_MODULE'), development_settings)
         self.assertIsNotNone(settings.URL_CONFIG)
         self.assertEqual(settings.URL_CONFIG, URL_CONFIG)
         self.assertTrue(settings.configured)
@@ -72,7 +72,7 @@ class TestPythonSettings(unittest.TestCase):
         from python_settings import settings
 
         try:
-            os.environ["SETTINGS_MODULE"] = "python_settings.tests.settings.lazy_settings"
+            os.environ['SETTINGS_MODULE'] = 'python_settings.tests.settings.lazy_settings'
         except Exception:
             raise BaseException('Error: Trying to set the environment')
 
@@ -85,7 +85,7 @@ class TestPythonSettings(unittest.TestCase):
         from python_settings import settings
         from python_settings.tests.settings import lazy_settings
         try:
-            os.environ["SETTINGS_MODULE"] = "python_settings.tests.settings.lazy_settings"
+            os.environ['SETTINGS_MODULE'] = 'python_settings.tests.settings.lazy_settings'
         except Exception:
             raise BaseException('Error: Trying to set the environment')
 
@@ -98,7 +98,7 @@ class TestPythonSettings(unittest.TestCase):
         from python_settings import settings
         from python_settings import ImproperlyConfigured
         try:
-            os.environ["SETTINGS_MODULE"] = "python_settings.tests.wrong_settings_module"
+            os.environ['SETTINGS_MODULE'] = 'python_settings.tests.wrong_settings_module'
         except Exception:
             raise BaseException('Error: Trying to set the environment')
         with self.assertRaises(ImproperlyConfigured) as c:
