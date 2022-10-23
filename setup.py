@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='python-settings',
-    version='0.2.2',
+    version='0.2.3',
     packages=setuptools.find_packages(),
     url='https://github.com/charlsagente/python-settings',
     license='MIT',
@@ -13,7 +13,7 @@ setuptools.setup(
     author_email='charlsagente@gmail.com',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    description='This module provides you easy access to your config/settings properties from all your python modules',
+    description='This utility provides you easy access to your config/settings CONSTANTS from all your python modules',
     classifiers=[
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
