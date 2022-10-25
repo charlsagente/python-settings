@@ -52,13 +52,12 @@ class Settings(BaseSettings):
     def __init__(self, settings_module):
         """
         Configures all the settings overriding the provided by the user
-        :param settings_module: User provided settings module (settings.py)
+        :param settings_module: User provided settings module ('settings')
         """
         #  update this dict from global settings but only for CAPITALS settings
         try:
             self.SETTINGS_MODULE = settings_module
-            mod = importlib.import_module(
-                self.SETTINGS_MODULE)
+            mod = importlib.import_module(self.SETTINGS_MODULE)
         except ImportError:
             raise ImproperlyConfigured("Cannot import SETTINGS_MODULE")
         except Exception:
@@ -104,10 +103,18 @@ class SetupSettings(object):
             )
         self._wrapped = Settings(settings_module)
 
-    def __getattr__(self, item):
-        if self._wrapped is empty:
-            self._setup(item)
-        get_attr = getattr(self._wrapped, item)
+    def __repr__(self):
+        # For debugging and show a nicer output
+        if not self.configured:
+            return '<SetupSettings [Unevaluated]>'
+        return '<SetupSettings "%(settings_module)s">' % {
+            'settings_module': self._wrapped.SETTINGS_MODULE,
+        }
+
+    def __getattr__(self, key):
+        if not self.configured:
+            self._setup(key)
+        get_attr = getattr(self._wrapped, key)
         if isinstance(get_attr, LazyProxy):
             try:
                 get_attr = get_attr()
@@ -118,16 +125,18 @@ class SetupSettings(object):
                     "LazySetting(MyCustomClass, [params])"
                     "Exception: %s - %s" % (type(ex), ex.__repr__())
                 )
+        self.__dict__[key] = get_attr  # Cache the value
         return get_attr
 
-    def configure(self, default_settings, **options):
+    def __setattr__(self, key, value):
+        self.__dict__.pop(key, None)  # Clear value from cache
+        super(SetupSettings, self).__setattr__(key, value)
+
+    def configure(self, default_settings):
         """
         Called to manually configure the settings. The 'default_settings'
         parameter sets where to retrieve any unspecified values from
         (its arguments must support attribute access (__getattr__))
-        :param default_settings:
-        :param options:
-        :return:
         """
         if self._wrapped is not empty:
             raise RuntimeError('Settings already configured.')
