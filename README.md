@@ -1,7 +1,9 @@
 [![Build Status](https://travis-ci.org/charlsagente/python-settings.svg?branch=master)](https://travis-ci.org/charlsagente/python-settings)
 
 # python-settings
-This module provides you easy access to your **config/settings** properties from all your python modules, it supports normal and lazy initialization for each property. It is based on 
+This utility provides you easy access to your **config/settings** properties from all your python modules, it supports regular and lazy instantiations. 
+
+This project is based on 
  [django.conf.settings](https://github.com/django/django/blob/stable/1.11.x/django/conf/__init__.py#L58').
  
  ## Installation
@@ -19,22 +21,24 @@ python setup.py install
 
  ## How to configure
 
-Create a python file like **settings.py** in your project, the variable names must be in Capital Letters (A-Z), example:
+Create a python file like **settings.py** in your project, all your constants must be defined using **UPPERCASE** 
+like the following examples:
+
 ```python
 # settings.py
 
-# Variables definition
+# Creating constants
+
 DATABASE_HOST = '10.0.0.1'
 
 DATABASE_NAME = 'DATABASENAME'
 
 ```
 
- Two optional patterns to initialize this library
+Then you have two options:
  
  * Option 1. Using an **environment variable**. 
- You must have an environment variable called **SETTINGS_MODULE** and as a value your just created python settings file in the format {module}.
- {name}. With no .py extension.
+ You must have an environment variable named **SETTINGS_MODULE** and as a value the path of your python settings file (no .py extension).
  
     Example in bash:
    ```bash
@@ -48,7 +52,7 @@ DATABASE_NAME = 'DATABASENAME'
    os.environ["SETTINGS_MODULE"] = 'settings' 
    ```
    
- *  Option 2. Calling the configure function from our settings module and passing it your python file
+ *  Option 2. Calling the **configure** method from our settings module and passing your python module
  
     ```python
     from python_settings import settings
@@ -61,7 +65,7 @@ DATABASE_NAME = 'DATABASENAME'
    
 ## How to use
 
-Import the settings module and access directly to your properties:
+Import our settings module and your CONSTANTS will be available in every part of your project:
 ```python
 from python_settings import settings 
 
@@ -69,15 +73,18 @@ print(settings.DATABASE_HOST) # Will print '10.0.0.1'
 print(settings.DATABASE_NAME) # Will print 'DATABASENAME'
 ``` 
 
+
+Please be careful with your settings file. It should only contain CONSTANTS and not complex code, specially if you are importing third party libraries. 
+
 ## Lazy Initialization 
 
 Every time you start/restart your python project, 
-all your defined variables are evaluated many times, 
+everything in your setting file is being loaded, you should keep this file fast but 
 if you are dealing with heavy to instantiate objects like
-database connections or similar network calls you will expect some delay. 
+database connections or similar network calls you will expect some performance issues at loading time. 
 
 Using Lazy Initialization increases the performance of this process, 
-changing the behavior of evaluating the variables only when is needed.   
+changing the behavior of evaluating the CONSTANTS only when they are needed.   
 
 ### Use the Lazy Initializer
 
@@ -93,10 +100,10 @@ LAZY_INITIALIZATION = LazySetting(HeavyInitializationClass, "127.0.0.1:4222")
 
 ```
 
-Only the first time you call this property, the HeavyInitializationClass will be instantiated and the 
-*args and **kwargs parameters will be passed. Every time you call this property the same instance will be returned.  
+Only the first time you call LazySetting, the HeavyInitializationClass will be instantiated and the 
+*args and **kwargs parameters will be passed. Every time you call the LazySetting your same instance will be returned.  
 
-And now from any place in your code, you have to call the property
+And now from any place in your code, you have to call your CONSTANT
  ```python
 from python_settings import settings 
 
@@ -138,5 +145,6 @@ export SETTINGS_MODULE = 'myproject.settings.testing_settings'
 or use the config function
 
 TODO LIST: 
-*   Add function to update default environment variable name
+* Add function to update default environment variable name
+* Keep this utility simple
 
