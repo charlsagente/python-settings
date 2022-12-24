@@ -7,3 +7,4 @@ dist/
 build/
 venv/
 
+python_settings.egg-info/

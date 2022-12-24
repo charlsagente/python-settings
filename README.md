@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/charlsagente/python-settings.svg?branch=master)](https://travis-ci.org/charlsagente/python-settings)
+[![CircleCI](https://circleci.com/gh/charlsagente/python-settings.svg?style=svg)](https://app.circleci.com/pipelines/github/charlsagente/python-settings)
 
 # python-settings
 This module provides you easy access to your **config/settings** properties from all your python modules, it supports normal and lazy initialization for each property. It is based on 
