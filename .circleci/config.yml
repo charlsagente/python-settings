@@ -55,7 +55,7 @@ jobs:
   test-3.11:
     <<: *test-template
     docker:
-      - image: circleci/python:3.11
+      - image: circleci/python:3.11-rc
 
 #
 ## Python CircleCI 2.0 configuration file
