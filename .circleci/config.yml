@@ -5,12 +5,11 @@ version: 2.1
 orbs:
   python: circleci/python@2.1.1
 
-
-workflows:
-    example-workflow:
-      jobs:
-        - python/test:
-            app-dir: ~/python-settings 
-            ensure-test-tool: true 
-            pypi-cache: true 
-            test-tool: pytest 
+jobs:
+  build_and_test: # this can be any name you choose
+    executor: python/default
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: python -m pytest
