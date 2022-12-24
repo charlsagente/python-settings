@@ -28,20 +28,15 @@ jobs:
             cd python_settings
             pytest -vvv tests
 
-      # store artifacts (for example logs, binaries, etc)
-      # to be available in the web app or through the API
-      - store_artifacts:
-          path: test-reports
-
   test-3.6:
     <<: *test-template
     docker:
       - image: circleci/python:3.6
 
-  test-3.7:
+  test-3.8:
     <<: *test-template
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
 
 #
 ## Python CircleCI 2.0 configuration file
