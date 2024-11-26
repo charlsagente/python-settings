@@ -60,9 +60,9 @@ class Settings(BaseSettings):
             mod = importlib.import_module(
                 self.SETTINGS_MODULE)
         except ImportError as ie:
-            raise ImproperlyConfigured(f"Cannot import SETTINGS_MODULE: {ie}") from ie
+            raise ImproperlyConfigured("Cannot import SETTINGS_MODULE: {}".format(ie))
         except Exception as e:
-            raise ImproperlyConfigured(f"Error trying to import your settings module: {e}") from e
+            raise ImproperlyConfigured("Error trying to import your settings module: {}".format(e))
         for setting in dir(mod):
             if setting.isupper():
                 setting_value = getattr(mod, setting)
