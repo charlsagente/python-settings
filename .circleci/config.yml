@@ -9,6 +9,8 @@ workflows:
       - test-3.9
       - test-3.10
       - test-3.11
+      - test-3.12
+      - test-3.13
 jobs:
   test-3.7: &test-template
     docker:
@@ -56,3 +58,13 @@ jobs:
     <<: *test-template
     docker:
       - image: cimg/python:3.11
+
+  test-3.12:
+    <<: *test-template
+    docker:
+      - image: cimg/python:3.12
+
+  test-3.13:
+    <<: *test-template
+    docker:
+      - image: cimg/python:3.13
